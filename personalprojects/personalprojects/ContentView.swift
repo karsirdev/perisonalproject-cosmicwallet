@@ -35,11 +35,13 @@ struct ContentView: View {
     }
 }
 
+// MARK: - CosmicTabBar
+
 struct CosmicTabBar: View {
     @Binding var selectedTab: Int
     @State private var ringAngle: Double = 0
     @State private var qrPulse  = false
-
+    
     private let tabs: [(icon: String, label: String)] = [
         ("house.fill",      "Trang chủ"),
         ("paperplane.fill", "Chuyển tiền"),
@@ -47,7 +49,7 @@ struct CosmicTabBar: View {
         ("sparkles",        "Ưu đãi"),
         ("person.fill",     "Tôi"),
     ]
-
+    
     var body: some View {
         ZStack(alignment: .bottom) {
             // Glass bar
@@ -61,7 +63,7 @@ struct CosmicTabBar: View {
                 .padding(.horizontal, 16)
                 .shadow(color: Color.appPrimary.opacity(0.25), radius: 20, x: 0, y: -4)
                 .shadow(color: .black.opacity(0.50), radius: 10, x: 0, y: 4)
-
+            
             HStack(spacing: 0) {
                 ForEach(0..<5) { i in
                     if i == 2 { qrButton } else { tabButton(i) }
@@ -78,3 +80,53 @@ struct CosmicTabBar: View {
             withAnimation(.easeInOut(duration: 2).repeatForever(autoreverses: true)) { qrPulse = true }
         }
     }
+    
+    // MARK: QR centre button
+    
+    private var qrButton: some View {
+        Button {
+            withAnimation(.spring(response: 0.4, dampingFraction: 0.6)) { selectedTab = 2 }
+        } label: {
+            ZStack {
+                // Pulse ring
+                Circle()
+                    .fill(Color.appPrimary.opacity(qrPulse ? 0.18 : 0.04))
+                    .frame(width: 72)
+                
+                // Rotating gradient ring
+                Circle()
+                    .stroke(
+                        AngularGradient(colors: [.appPrimary, .cosmicCyan, .cosmicPink, .appPrimary],
+                                        center: .center),
+                        lineWidth: 2.5
+                    )
+                    .frame(width: 64)
+                    .rotationEffect(.degrees(ringAngle))
+                    .opacity(selectedTab == 2 ? 1 : 0.5)
+                
+                // Main circle
+                Circle()
+                    .fill(CG.button)
+                    .frame(width: 56)
+                    .overlay(
+                        Circle().fill(
+                            RadialGradient(colors: [.white.opacity(0.25), .clear],
+                                           center: .init(x: 0.35, y: 0.25),
+                                           startRadius: 0, endRadius: 28)
+                        )
+                    )
+                    .appButtonShadow(color: .appPrimary)
+                
+                Image(systemName: "qrcode.viewfinder")
+                    .font(.system(size: 24, weight: .bold))
+                    .foregroundColor(.white)
+                    .scaleEffect(selectedTab == 2 ? 1.12 : 1.0)
+                    .animation(.spring(response: 0.3), value: selectedTab)
+            }
+        }
+        .buttonStyle(CosmicButtonStyle())
+        .accessibilityLabel("Quét mã QR")
+        .offset(y: -20)
+        .frame(maxWidth: .infinity)
+    }
+}
