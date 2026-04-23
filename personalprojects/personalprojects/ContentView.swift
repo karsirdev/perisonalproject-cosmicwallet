@@ -244,6 +244,25 @@ struct CosmicTabBar: View {
             }
         }
         
+        private var scanCorners: some View {
+            GeometryReader { g in
+                let w = g.size.width, h = g.size.height, len: CGFloat = 30, t: CGFloat = 4, r: CGFloat = 20
+                ZStack {
+                    Path { p in p.move(to: .init(x: 0, y: r+len)); p.addLine(to: .init(x: 0, y: r))
+                        p.addArc(center: .init(x: r, y: r), radius: r, startAngle: .degrees(180), endAngle: .degrees(270), clockwise: false)
+                        p.addLine(to: .init(x: r+len, y: 0)) }.stroke(Color.appSecondary, lineWidth: t)
+                    Path { p in p.move(to: .init(x: w-r-len, y: 0)); p.addLine(to: .init(x: w-r, y: 0))
+                        p.addArc(center: .init(x: w-r, y: r), radius: r, startAngle: .degrees(270), endAngle: .degrees(0), clockwise: false)
+                        p.addLine(to: .init(x: w, y: r+len)) }.stroke(Color.cosmicCyan, lineWidth: t)
+                    Path { p in p.move(to: .init(x: 0, y: h-r-len)); p.addLine(to: .init(x: 0, y: h-r))
+                        p.addArc(center: .init(x: r, y: h-r), radius: r, startAngle: .degrees(180), endAngle: .degrees(90), clockwise: true)
+                        p.addLine(to: .init(x: r+len, y: h)) }.stroke(Color.cosmicPink, lineWidth: t)
+                    Path { p in p.move(to: .init(x: w-r-len, y: h)); p.addLine(to: .init(x: w-r, y: h))
+                        p.addArc(center: .init(x: w-r, y: h-r), radius: r, startAngle: .degrees(90), endAngle: .degrees(0), clockwise: true)
+                        p.addLine(to: .init(x: w, y: h-r-len)) }.stroke(Color.appPrimary, lineWidth: t)
+                }
+            }
+        }
     }
 }
 #Preview {
